@@ -130,9 +130,14 @@ function AppContent() {
 }
 
 export default function App() {
-  return (
-    <GlobalErrorBoundary>
-      <AppContent />
-    </GlobalErrorBoundary>
+ return (
+    <div className="min-h-screen bg-[#03080b] flex flex-col items-center justify-center font-sans">
+      <MobilePhoneShell 
+        title={onboardingStep === 'permissions' ? "VocalForLocal • Setup" : "VocalForLocal"} 
+        badge={currentUser ? currentUser.role.toUpperCase() : (onboardingStep === 'permissions' ? "Step 1 of 2" : "Security Vault")}
+      >
+        {renderMobilePortal()}
+      </MobilePhoneShell>
+    </div>
   );
 }
