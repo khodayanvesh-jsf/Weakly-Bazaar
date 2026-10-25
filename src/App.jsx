@@ -1,46 +1,10 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState } from 'react';
 import MobilePhoneShell from './components/MobilePhoneShell';
 import AuthGateway from './portals/AuthGateway';
 import CustomerPortal from './portals/CustomerPortal';
 import MerchantPortal from './portals/MerchantPortal';
 import RiderPortal from './portals/RiderPortal';
 import AdminDashboard from './portals/AdminDashboard';
-
-// ============================================================================
-// GLOBAL ERROR BOUNDARY (CATCHES CRASHES & PREVENTS BLANK SCREENS)
-// ============================================================================
-class GlobalErrorBoundary extends React.Component {
-  constructor(props) {
-    super(props);
-    this.state = { hasError: false, error: null, errorInfo: null };
-  }
-  static getDerivedStateFromError(error) {
-    return { hasError: true, error };
-  }
-  componentDidCatch(error, errorInfo) {
-    this.setState({ errorInfo });
-    console.error("Weekly Bazaar App Crashed:", error, errorInfo);
-  }
-  render() {
-    if (this.state.hasError) {
-      return (
-        <div className="min-h-screen bg-[#071318] flex flex-col items-center justify-center p-4 font-sans">
-          <div className="bg-slate-900 border-2 border-rose-500 rounded-3xl w-full max-w-2xl p-6 shadow-2xl shadow-rose-900/50">
-            <h2 className="text-xl font-black text-rose-400 mb-2">⚠️ Application Crashed!</h2>
-            <div className="bg-[#03080b] rounded-xl p-4 border border-rose-900/50 mb-3 overflow-x-auto">
-              <p className="text-[11px] font-bold text-rose-300 mb-1">Error Message:</p>
-              <p className="text-xs font-mono text-rose-100">{this.state.error?.toString()}</p>
-            </div>
-            <button onClick={() => window.location.reload()} className="mt-5 w-full bg-rose-600 hover:bg-rose-500 text-white font-black py-3 rounded-xl shadow-lg cursor-pointer">
-              🔄 Reload Application
-            </button>
-          </div>
-        </div>
-      );
-    }
-    return this.props.children;
-  }
-}
 
 // ============================================================================
 // MASTER APP LOGIC
@@ -50,13 +14,13 @@ function AppContent() {
   const [currentUser, setCurrentUser] = useState(null);
   const [orders, setOrders] = useState([]); 
   
-  // EVENT BIDDING MEMORY (Shared between Customer & Merchant)
+  // EVENT BIDDING MEMORY
   const [decorBids, setDecorBids] = useState([]);
-  const [biddingStatus, setBiddingStatus] = useState('IDLE'); // 'IDLE' | 'BROADCASTED' | 'PAID'
+  const [biddingStatus, setBiddingStatus] = useState('IDLE');
   
-  // VIEW MANAGER
-  const [viewMode, setViewMode] = useState('mobile'); // 'mobile', 'admin', 'simulator'
-  const [onboardingStep, setOnboardingStep] = useState('permissions'); // 'permissions', 'auth', 'app'
+  // VIEW MANAGER (Here is the missing variable!)
+  const [viewMode, setViewMode] = useState('mobile'); 
+  const [onboardingStep, setOnboardingStep] = useState('permissions'); 
 
   const handleLoginSuccess = (user) => {
     if (user.fullName.toLowerCase() === 'admin') {
@@ -116,22 +80,9 @@ function AppContent() {
     return <AdminDashboard orders={orders} setViewMode={setViewMode} onLogout={handleLogout} />;
   }
 
+  // EXACT OLD PREMIUM LOOK (No ugly floating text)
   return (
-    <div className="min-h-screen bg-[#03080b] flex flex-col items-center justify-center p-4 font-sans">
-      <div className="text-center mb-6">
-        <h1 className="text-2xl font-black text-transparent bg-clip-text bg-gradient-to-r from-emerald-400 to-teal-200 tracking-wider">WEEKLY BAZAAR</h1>
-        <p className="text-[10px] text-slate-400 uppercase tracking-widest mt-1">Component Architecture Live</p>
-      </div>
-      <MobilePhoneShell title="WEEKLY BAZAAR" badge={currentUser ? currentUser.role.toUpperCase() : (onboardingStep === 'permissions' ? "SETUP" : "SECURE LOGIN")}>
-        {renderMobilePortal()}
-      </MobilePhoneShell>
-    </div>
-  );
-}
-
-export default function App() {
- return (
-    <div className="min-h-screen bg-[#03080b] flex flex-col items-center justify-center font-sans">
+    <div className="min-h-screen bg-[#03080b] flex flex-col items-center justify-center font-sans py-6">
       <MobilePhoneShell 
         title={onboardingStep === 'permissions' ? "VocalForLocal • Setup" : "VocalForLocal"} 
         badge={currentUser ? currentUser.role.toUpperCase() : (onboardingStep === 'permissions' ? "Step 1 of 2" : "Security Vault")}
@@ -140,4 +91,8 @@ export default function App() {
       </MobilePhoneShell>
     </div>
   );
+}
+
+export default function App() {
+  return <AppContent />;
 }
